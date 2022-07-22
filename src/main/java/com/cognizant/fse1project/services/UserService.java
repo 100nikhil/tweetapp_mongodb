@@ -1,17 +1,18 @@
 package com.cognizant.fse1project.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.cognizant.fse1project.models.Reply;
 import com.cognizant.fse1project.models.Tweet;
 import com.cognizant.fse1project.models.User;
+import com.cognizant.fse1project.models.UserTweets;
 import com.cognizant.fse1project.repositories.UserRepo;
 
 @Service
@@ -20,8 +21,8 @@ public class UserService {
 	@Autowired
 	private UserRepo userRepo;
 	
-	@Autowired
-	private MongoTemplate mongoTemplate;
+//	@Autowired
+//	private MongoTemplate mongoTemplate;
 
 	public User register(User user) {
 		user.setId(Math.random()+"");
@@ -50,9 +51,18 @@ public class UserService {
 
 	public List<Tweet> getAllTweets() {
 		
-		List<Tweet> t = userRepo.findAllTweets();
+		List<UserTweets> t = userRepo.findAllTweets();
+		List<Tweet> uTweets = new ArrayList<>();
 		if(t!=null) {
-			return t;
+			for(UserTweets o: t) {
+				List<Tweet> temp = o.getTweets();
+				if(temp!=null) {					
+					for(Tweet t1: temp) {
+						uTweets.add(t1);
+					}
+				}
+			}
+			return uTweets;
 		}
 		return null;
 	}

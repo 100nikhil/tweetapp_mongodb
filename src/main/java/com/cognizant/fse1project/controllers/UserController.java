@@ -3,6 +3,7 @@ package com.cognizant.fse1project.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,13 +18,18 @@ import com.cognizant.fse1project.models.Tweet;
 import com.cognizant.fse1project.models.User;
 import com.cognizant.fse1project.services.UserService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@CrossOrigin(origins="http://localhost:4200")
 @RequestMapping("/api/v1.0/tweets")
+@ApiOperation(value="Controller for the tweet API", tags="Contains all the API end points")
 public class UserController {
-	
+		
 	@Autowired
 	private UserService userService;
 	
+	@ApiOperation(value="Rest endpoint for registration")
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody User user){
 		return new ResponseEntity<>(userService.register(user), HttpStatus.CREATED);
@@ -33,9 +39,9 @@ public class UserController {
 	public ResponseEntity<?> login(@RequestBody User user){
 		User u = userService.login(user);
 		if(u!=null) {			
-			return new ResponseEntity<>("You are successfully logged In", HttpStatus.OK);
+			return new ResponseEntity<>(u, HttpStatus.OK);
 		}
-		return new ResponseEntity<>("Wrong email or password!", HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>("Wrong email or password!", HttpStatus.NOT_FOUND);
 	}
 	
 	@PostMapping("/{username}/add")
@@ -60,7 +66,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{username}")
-	public ResponseEntity<?> getAllTweets(@PathVariable String username){
+	public ResponseEntity<?> getMyTweets(@PathVariable String username){
 		return new ResponseEntity<>(userService.getAllTweetsForUser(username), HttpStatus.OK);
 	}
 
