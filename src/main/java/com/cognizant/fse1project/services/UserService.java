@@ -17,23 +17,23 @@ import com.cognizant.fse1project.repositories.UserRepo;
 
 @Service
 public class UserService {
-	
+
 	@Autowired
 	private UserRepo userRepo;
-	
-//	@Autowired
-//	private MongoTemplate mongoTemplate;
+
+	// @Autowired
+	// private MongoTemplate mongoTemplate;
 
 	public User register(User user) {
-		user.setId(Math.random()+"");
+		user.setId(Math.random() + "");
 		return userRepo.save(user);
 	}
 
 	public User login(User user) {
-		User u =  userRepo.findByEmail(user.getEmail());
-		//System.out.println(u);
-		if(u!=null) {
-			if(u.getPassword().equals(user.getPassword())) {
+		User u = userRepo.findByEmail(user.getEmail());
+		// System.out.println(u);
+		if (u != null) {
+			if (u.getPassword().equals(user.getPassword())) {
 				return u;
 			}
 		}
@@ -41,23 +41,23 @@ public class UserService {
 	}
 
 	public List<User> getAll() {
-		
+
 		List<User> l = userRepo.findAll();
-		if(l!=null) {
+		if (l != null) {
 			return l;
 		}
 		return null;
 	}
 
 	public List<Tweet> getAllTweets() {
-		
+
 		List<UserTweets> t = userRepo.findAllTweets();
 		List<Tweet> uTweets = new ArrayList<>();
-		if(t!=null) {
-			for(UserTweets o: t) {
+		if (t != null) {
+			for (UserTweets o : t) {
 				List<Tweet> temp = o.getTweets();
-				if(temp!=null) {					
-					for(Tweet t1: temp) {
+				if (temp != null) {
+					for (Tweet t1 : temp) {
 						uTweets.add(t1);
 					}
 				}
@@ -69,7 +69,7 @@ public class UserService {
 
 	public User searchByUsername(String username) {
 		User u = userRepo.findByEmail(username);
-		if(u!=null) {
+		if (u != null) {
 			return u;
 		}
 		return null;
@@ -77,7 +77,7 @@ public class UserService {
 
 	public Set<Tweet> getAllTweetsForUser(String username) {
 		User u = userRepo.findByEmail(username);
-		if(u!=null) {
+		if (u != null) {
 			Set<Tweet> t = u.getTweets();
 			return t;
 		}
@@ -85,72 +85,75 @@ public class UserService {
 	}
 
 	public User addNewTweet(String username, Tweet t) {
-		
-		t.setTid(Math.random()+"");
+
+		t.setTid(Math.random() + "");
+		t.setEmail(username);
 		t.setCreated(LocalDateTime.now());
-		t.setLike(false);
+		t.setLikes(null);
 		System.out.println(t);
-		
+
 		User u = userRepo.findByEmail(username);
-		if(u!=null) {
+		if (u != null) {
 			Set<Tweet> tweets = u.getTweets();
-			if(tweets==null) {
+			if (tweets == null) {
 				Set<Tweet> tset = new HashSet<>();
 				tset.add(t);
 				u.setTweets(tset);
-			}
-			else {
+			} else {
 				tweets.add(t);
 				u.setTweets(tweets);
 			}
 			return userRepo.save(u);
-			
-		} 
+
+		}
 		return null;
 	}
 
 	public User updateTweet(String username, String id, Tweet t) {
-		
-		t.setCreated(LocalDateTime.now());
+
 		t.setTid(id);
-		t.setLike(false);
-		
+		t.setEmail(username);
+		t.setCreated(LocalDateTime.now());
+		t.setLikes(null);
+
 		User u = userRepo.findByEmail(username);
-		if(u!=null) {
+		if (u != null) {
 			Set<Tweet> tweets = u.getTweets();
-			if(tweets==null) {
+			if (tweets == null) {
 				Set<Tweet> tset = new HashSet<>();
 				tset.add(t);
 				u.setTweets(tset);
-			}
-			else {
+			} else {
 				Tweet found = null;
-				for(Tweet t1: tweets) {
-					if(t1.getTid().equals(id)) {
+				for (Tweet t1 : tweets) {
+					if (t1.getTid().equals(id)) {
 						found = t1;
 						break;
 					}
 				}
+				t.setLikes(found.getLikes());
+				t.setReplies(found.getReplies());
+				
 				tweets.remove(found);
 				tweets.add(t);
 				u.setTweets(tweets);
 			}
-			
+
 			return userRepo.save(u);
-			
-		} 
+
+		}
 		return null;
 	}
 
 	public User deleteTweet(String username, String id) {
-		
+
 		User u = userRepo.findByEmail(username);
-		if(u!=null) {
+		if (u != null) {
 			Set<Tweet> tweets = u.getTweets();
 			Tweet found = null;
-			if(tweets!=null) {				
-				for(Tweet t1: tweets) {
-					if(t1.getTid().equals(id)) {
+			if (tweets != null) {
+				for (Tweet t1 : tweets) {
+					if (t1.getTid().equals(id)) {
 						found = t1;
 						break;
 					}
@@ -158,80 +161,104 @@ public class UserService {
 			}
 			tweets.remove(found);
 			u.setTweets(tweets);
-			
-			return userRepo.save(u);	
+
+			return userRepo.save(u);
 		}
 		return null;
 	}
 
 	public User likeTweet(String username, String id) {
 		
-		User u = userRepo.findByEmail(username);
-		if(u!=null) {
+		List<User> us = userRepo.findAll();
+		
+		for(User u: us) {
+			
+			System.out.println(u);
+			System.out.println(id);
+			
 			Set<Tweet> tweets = u.getTweets();
 			Tweet found = null;
-			if(tweets!=null) {				
-				for(Tweet t1: tweets) {
-					if(t1.getTid().equals(id)) {
-						found = t1;
-						break;
+			
+			if(u!=null) {
+				if(tweets!=null) {				
+					for(Tweet t1: tweets) {
+						if(t1.getTid().equals(id)) {
+							found = t1;
+							break;
+						}
 					}
 				}
+				if(found != null) {
+					Tweet newT = new Tweet();
+					Set<String> likedBy = found.getLikes();
+					if(likedBy==null) {
+						Set<String> ll = new HashSet<>();
+						ll.add(username);
+						newT.setLikes(ll);
+					}
+					else {
+						if(likedBy.contains(username)) {
+							likedBy.remove(username);
+						}
+						else {							
+							likedBy.add(username);
+						}
+						newT.setLikes(likedBy);
+					}
+					newT.setCreated(LocalDateTime.now());
+					newT.setEmail(found.getEmail());
+					newT.setTid(id);
+					newT.setTweet(found.getTweet());
+					newT.setReplies(found.getReplies());
+					
+					tweets.remove(found);
+					tweets.add(newT);
+					u.setTweets(tweets);
+					
+					return userRepo.save(u);	
+				}
 			}
-			Tweet newT = new Tweet();
-			newT.setCreated(LocalDateTime.now());
-			newT.setLike(!found.isLike());
-			newT.setTid(id);
-			newT.setTweet(found.getTweet());
-			newT.setReplies(found.getReplies());
-			
-			tweets.remove(found);
-			tweets.add(newT);
-			u.setTweets(tweets);
-			
-			return userRepo.save(u);	
-		}
+		}		
 			
 		return null;
 	}
 
 	public User addNewReply(String username, String id, Reply reply) {
-		
+
 		User u = userRepo.findByEmail(username);
-		if(u!=null) {
+		if (u != null) {
 			Set<Tweet> tweets = u.getTweets();
 			Tweet found = null;
-			if(tweets!=null) {				
-				for(Tweet t1: tweets) {
-					if(t1.getTid().equals(id)) {
+			if (tweets != null) {
+				for (Tweet t1 : tweets) {
+					if (t1.getTid().equals(id)) {
 						found = t1;
 						break;
 					}
 				}
 			}
-//			Tweet newT = new Tweet();
-//			newT.setCreated(LocalDateTime.now());
-//			newT.setLike(!found.isLike());
-//			newT.setTid(id);
-//			newT.setTweet(found.getTweet());
-			
+			// Tweet newT = new Tweet();
+			// newT.setCreated(LocalDateTime.now());
+			// newT.setLike(!found.isLike());
+			// newT.setTid(id);
+			// newT.setTweet(found.getTweet());
+
 			Set<Reply> reps = found.getReplies();
-			if(reps!=null) {
+			if (reps != null) {
 				reps.add(reply);
-			}
-			else {
+			} else {
 				Set<Reply> s = new HashSet<>();
 				s.add(reply);
 				found.setReplies(s);
 			}
-			
-//			tweets.remove(found);
-//			tweets.add(newT);
+
+			// tweets.remove(found);
+			// tweets.add(newT);
 			u.setTweets(tweets);
-			
-			return userRepo.save(u);	
+
+			return userRepo.save(u);
 		}
 		return null;
 	}
-	
+
 }

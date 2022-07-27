@@ -2,24 +2,24 @@ package com.cognizant.fse1project.models;
 
 public class Reply {
 
-	private String rid;  //replier id
+	private String email;
 	private String reply;
 
 	public Reply() {
 	}
 
-	public Reply(String rid, String reply) {
+	public Reply(String email, String reply) {
 		super();
-		this.rid = rid;
+		this.email = email;
 		this.reply = reply;
 	}
 
-	public String getRid() {
-		return rid;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setRid(String rid) {
-		this.rid = rid;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getReply() {
@@ -32,7 +32,7 @@ public class Reply {
 
 	@Override
 	public String toString() {
-		return "Reply [rid=" + rid + ", reply=" + reply + "]";
+		return "Reply [email=" + email + ", reply=" + reply + "]";
 	}
 
 }

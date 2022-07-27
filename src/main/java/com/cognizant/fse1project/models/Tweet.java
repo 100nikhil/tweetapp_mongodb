@@ -6,20 +6,22 @@ import java.util.Set;
 public class Tweet {
 
 	private String tid;
+	private String email;
 	private String tweet;
 	private LocalDateTime created;
-	private boolean like;
+	private Set<String> likes;
 	private Set<Reply> replies;
 
 	public Tweet() {
 	}
 
-	public Tweet(String tid, String tweet, LocalDateTime created, boolean like, Set<Reply> replies) {
+	public Tweet(String tid, String email, String tweet, LocalDateTime created, Set<String> likes, Set<Reply> replies) {
 		super();
 		this.tid = tid;
+		this.email = email;
 		this.tweet = tweet;
 		this.created = created;
-		this.like = like;
+		this.likes = likes;
 		this.replies = replies;
 	}
 
@@ -29,6 +31,14 @@ public class Tweet {
 
 	public void setTid(String tid) {
 		this.tid = tid;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getTweet() {
@@ -47,12 +57,12 @@ public class Tweet {
 		this.created = created;
 	}
 
-	public boolean isLike() {
-		return like;
+	public Set<String> getLikes() {
+		return likes;
 	}
 
-	public void setLike(boolean like) {
-		this.like = like;
+	public void setLikes(Set<String> likes) {
+		this.likes = likes;
 	}
 
 	public Set<Reply> getReplies() {
@@ -65,8 +75,8 @@ public class Tweet {
 
 	@Override
 	public String toString() {
-		return "Tweet [tid=" + tid + ", tweet=" + tweet + ", created=" + created + ", like=" + like + ", replies="
-				+ replies + "]";
+		return "Tweet [tid=" + tid + ", email=" + email + ", tweet=" + tweet + ", created=" + created + ", likes="
+				+ likes + ", replies=" + replies + "]";
 	}
 
 }
